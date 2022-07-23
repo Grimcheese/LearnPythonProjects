@@ -2,28 +2,47 @@
 
 import random
 
-lowerBound = 0
-upperBound = 10
+class NumberGenerator:
+    
+    lowerBound = 0
+    upperBound = 10
 
-#Generate random number
-def number_generator(lower, upper):
-    number = random.randint(lower, upper)
+    def __init__(self):
+        self.randmNumber = None
+        self.hint = None
 
-    return number
 
+    def generate_number(self):
+        self.randomNumber = random.randint(NumberGenerator.lowerBound, NumberGenerator.upperBound)
+
+        return self.randomNumber
+
+    def compare_numbers(self, userNum):
+        winVal = False
+        if userNum == self.randomNumber:
+            self.hint = "You win!"
+            winVal = True
+        elif userNum > self.randomNumber:
+            self.hint = "Too high!"
+        elif userNum < self.randomNumber:
+            self.hint = "Too low!"
+        
+        return winVal
+
+            
 
 
 # Allow user to guess
 def get_user_guess(prompt):
     user_number = input(prompt + ": ")
-    return user_number
+    return int(user_number)
 
+NumGen = NumberGenerator()
+number = NumGen.generate_number()
+print(number)
 
-# Compare guess to generated number
-def compare_numbers(randNum, userNum):
-    if userNum > randNum:
-
-
-random_number = number_generator(lowerBound, upperBound)
-user_guess = get_user_guess("Please guess a number between " + lowerBound + " and " + upperBound)
-result = compare_numbers(random_number, user_guess)
+winVal = False
+while winVal == False:
+    user_guess = get_user_guess("Please guess a number between " + str(NumberGenerator.lowerBound) + " and " + str(NumberGenerator.upperBound))
+    winVal = NumGen.compare_numbers(user_guess)
+    print(NumGen.hint)
