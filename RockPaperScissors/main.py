@@ -11,8 +11,8 @@ import random
 class RockPaperScissors:
     
     #Constructors
-    def __init__(self, newRPSString = None):
-        
+    def __init__(self, name, newRPSString = None):
+        self.rpsName = name
         if newRPSString == None:
             self.rpsVal = self.make_random_rock_paper_scissors()
             self.rpsString = self.get_rps_val_string(self.rpsVal)
@@ -39,6 +39,25 @@ class RockPaperScissors:
 
         
         return isValid
+
+    #returns integer value 0, 1, 2
+    # 0 = It is a tie
+    # 1 = First RPS wins
+    # 2 = Second RPS wins
+    @classmethod
+    def compare_rock_paper_scissors(self, rps1, rps2):
+        result = -1
+        if rps1.rpsVal == rps2.rpsVal:
+            print("It is a draw!")
+            result = 0
+        elif rps1.rpsString == "Rock" and rps2.rpsString == "Scissors" or rps1.rpsString == "Paper" and rps2.rpsString == "Rock" or rps1.rpsString == "Scissors" and rps2.rpsString == "Paper":
+            result = 1
+            print(rps1.rpsName + " wins!")
+        else:
+            result = 2
+            print(rps2.rpsName + " wins!")
+
+        return result
 
 
     def make_random_rock_paper_scissors(self):
@@ -94,12 +113,22 @@ def get_user_rock_paper_scissors():
     return userInput
 
 
-userRPS = RockPaperScissors(get_user_rock_paper_scissors())
-print("User chose: " + userRPS.rpsString)
 
+print("Welcome to Rock, Paper, Scissors!")
+play = True
+while play == True:
+    userRPS = RockPaperScissors("User", get_user_rock_paper_scissors())
+    print("User chose: " + userRPS.rpsString)
 
-ai = RockPaperScissors()
-print("AI chose: " + ai.rpsString)
+    ai = RockPaperScissors("AI")
+    print("AI chose: " + ai.rpsString)
+    RockPaperScissors.compare_rock_paper_scissors(userRPS, ai)
 
+    #user input with no validation
+    
+    if input("Play again?(y/n): ") == "n":
+        play = False
+        break
+        
 
 
