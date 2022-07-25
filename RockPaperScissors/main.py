@@ -108,13 +108,12 @@ class RockPaperScissors:
 def get_user_rock_paper_scissors():
     isValid = False
 
-    while isValid == False:
+    while not isValid:
         userInput = input("Please choose Rock, Paper or Scissors: ")
+        
         isValid = RockPaperScissors.validate_RPS_string(userInput)
-        if isValid == True:
-            print("Valid")
-        else:
-            print("Not valid")
+        if not isValid:
+            print("Not a valid selection. Try again")
     
     return userInput
 
@@ -123,7 +122,7 @@ ai = RockPaperScissors("AI")
 
 print("Welcome to Rock, Paper, Scissors!")
 play = True
-while play == True:
+while play:
     userRPS.update_rps_values(get_user_rock_paper_scissors())
     ai.make_random_rock_paper_scissors()
     print("User chose: " + userRPS.rpsString)
@@ -138,7 +137,7 @@ while play == True:
     
     if input("Play again?(y/n): ") == "n":
         play = False
-        break
+
         
 
 
