@@ -13,12 +13,8 @@ class RockPaperScissors:
     #Constructors
     def __init__(self, name, newRPSString = None):
         self.rpsName = name
-        if newRPSString == None:
-            self.rpsVal = self.make_random_rock_paper_scissors()
-            self.rpsString = self.get_rps_val_string(self.rpsVal)
-        else:
-            self.rpsString = newRPSString
-            self.rpsVal = self.get_rps_string_val(newRPSString) #Sets rpsString to standardised value
+        self.score = 0
+        self.update_rps_values(newRPSString)
 
     
     @classmethod
@@ -52,16 +48,26 @@ class RockPaperScissors:
             result = 0
         elif rps1.rpsString == "Rock" and rps2.rpsString == "Scissors" or rps1.rpsString == "Paper" and rps2.rpsString == "Rock" or rps1.rpsString == "Scissors" and rps2.rpsString == "Paper":
             result = 1
+            rps1.score += 1
             print(rps1.rpsName + " wins!")
         else:
             result = 2
+            rps2.score += 1
             print(rps2.rpsName + " wins!")
 
         return result
 
+    def update_rps_values(self, newRPSString):
+        if newRPSString == None:
+            self.rpsVal = -1
+            self.rpsString = self.get_rps_val_string(self.rpsVal)
+        else:
+            self.rpsString = newRPSString
+            self.rpsVal = self.get_rps_string_val(newRPSString) #Sets rpsString to standardised value
 
     def make_random_rock_paper_scissors(self):
         rNum = random.randint(0,2)
+        self.update_rps_values(self.get_rps_val_string(rNum))
 
         return rNum
     
@@ -103,7 +109,7 @@ def get_user_rock_paper_scissors():
     isValid = False
 
     while isValid == False:
-        userInput = input("Please choose: ")
+        userInput = input("Please choose Rock, Paper or Scissors: ")
         isValid = RockPaperScissors.validate_RPS_string(userInput)
         if isValid == True:
             print("Valid")
@@ -112,17 +118,21 @@ def get_user_rock_paper_scissors():
     
     return userInput
 
-
+userRPS = RockPaperScissors("User")
+ai = RockPaperScissors("AI")
 
 print("Welcome to Rock, Paper, Scissors!")
 play = True
 while play == True:
-    userRPS = RockPaperScissors("User", get_user_rock_paper_scissors())
+    userRPS.update_rps_values(get_user_rock_paper_scissors())
+    ai.make_random_rock_paper_scissors()
     print("User chose: " + userRPS.rpsString)
-
-    ai = RockPaperScissors("AI")
     print("AI chose: " + ai.rpsString)
     RockPaperScissors.compare_rock_paper_scissors(userRPS, ai)
+    
+    print("Score")
+    print(userRPS.rpsName + ": " + str(userRPS.score))
+    print(ai.rpsName + ": " + str(ai.score))
 
     #user input with no validation
     
