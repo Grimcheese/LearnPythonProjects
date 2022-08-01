@@ -25,6 +25,6 @@ Using projects from https://hackr.io/blog/python-projects
     where it searches for a specific number selected by the user. 
     
 5/ Calculator
-    A calculator program built in python. A calculator with a GUI that provides basic calculator functions; +, -, *, /. User enters numbers and then pushes buttons to get results. 
+    A calculator program built in python. A calculator with a GUI that provides basic calculator functions; +, -, *, /. User enters numbers and then pushes buttons to get results. GUI is created using windows, frames and widgets from the TKinter module.
         ToDo
             Add scientific calculator functionality
