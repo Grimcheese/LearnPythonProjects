@@ -19,22 +19,27 @@ def add_method(value1, value2):
     print(sum)
     return sum
 
+#initialise required settings
+total = 0
+newVal = 0
+
 main_window = tk.Tk()
 
 #text = tk.Label(text="My Calculator", foreground = "white", background = "black")
 #text.pack()
-total = 2
-newVal = 4
+
 top_frame = tk.Frame()
 button_frame = tk.Frame(width = 6)
 
 user_entry = tk.Entry(master = top_frame, bg = "white", fg = "black", justify = "right")
 user_entry.pack()
+if not user_entry.get() == "":
+    newVal = int(user_entry.get())
 
 label2 = tk.Label(master = button_frame, text = "Base")
 label2.pack(fill = tk.X)
 
-plus_button = tk.Button(master = button_frame, text = "+", command = add_method(total, newVal))
+plus_button = tk.Button(master = button_frame, text = "+", command=add_method(total, newVal))
 plus_button.pack(fill = tk.X)
 minus_button = tk.Button(master = button_frame, text = "-")
 minus_button.pack(fill = tk.X)
