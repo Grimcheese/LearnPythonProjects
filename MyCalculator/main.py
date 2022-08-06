@@ -12,7 +12,9 @@ class MainApp:
         self.top_frame = tk.Frame(master = parent)
         self.button_frame = tk.Frame(master = parent, width = 6)
 
-        self.user_entry = tk.Entry(master = self.top_frame, bg = "white", fg = "black", justify = "right")
+        
+        reg = parent.register(self.entry_input_callback)
+        self.user_entry = tk.Entry(master = self.top_frame, validate = "key", validatecommand = (reg, '%P'), bg = "white", fg = "black", justify = "right")
         self.user_entry.pack()
 
         self.label2 = tk.Label(master = self.button_frame, text = "Base")
@@ -31,8 +33,7 @@ class MainApp:
         self.top_frame.pack(side = tk.TOP)
         self.button_frame.pack(side = tk.RIGHT)
 
-        reg = parent.register(entry_input_callback)
-        self.user_entry.config(validate = "key", validatecommand = (reg, '%P'))
+        #self.user_entry.config(validate = "key", validatecommand = (reg, '%P'))
 
 
 
@@ -54,13 +55,13 @@ class MainApp:
             return 0
 
 
-def entry_input_callback(input):
-    if input.isdigit():
-        return True
-    elif input == "":
-        return True
-    else:
-        return False
+    def entry_input_callback(self, input):
+        if input.isdigit():
+            return True
+        elif input == "":
+            return True
+        else:
+            return False
 
 
 
