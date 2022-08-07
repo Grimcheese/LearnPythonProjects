@@ -14,11 +14,15 @@ class MainApp:
     def __init__(self, parent, calcValues):
         self.top_frame = tk.Frame(master = parent)
         self.button_frame = tk.Frame(master = parent, width = 6)
-
+        self.button_frame2 = tk.Frame(master = parent, width = 6) 
         
+
+        self.current_total_label = tk.Label(master = self.top_frame, text = str(calcValues.runningTotal), bg = "white", fg = "black")
+        self.current_total_label.pack(side = tk.LEFT)
+
         reg = parent.register(self.entry_input_callback)
         self.user_entry = tk.Entry(master = self.top_frame, validate = "key", validatecommand = (reg, '%P'), bg = "white", fg = "black", justify = "right")
-        self.user_entry.pack()
+        self.user_entry.pack(side = tk.LEFT)
         self.user_entry.focus_set()
 
         self.label2 = tk.Label(master = self.button_frame, text = "Base")
@@ -34,11 +38,12 @@ class MainApp:
         self.divide_button.pack(fill = tk.X)
         #equals_button = tk.Button(master = button_frame, text = "=", command = lambda: equals_method(total, curentVal))
 
-        self.clear_button = tk.Button(text = "C", command = calcValues.clearVals)
+        self.clear_button = tk.Button(master = self.button_frame2, text = "C", command = calcValues.clearVals)
         self.clear_button.pack()
 
         self.top_frame.pack(side = tk.TOP)
         self.button_frame.pack(side = tk.RIGHT)
+        self.button_frame2.pack(side = tk.RIGHT)
 
         #self.user_entry.config(validate = "key", validatecommand = (reg, '%P'))
 
@@ -48,9 +53,9 @@ class MainApp:
     #adds two integer values
     def add_method(self, calcValues):
 
-        currentVal = self.get_entry_value()   
-        calcValues.runningTotal = calcValues.runningTotal + currentVal
-        print("The current value in entry is: " + str(currentVal))
+        calcValues.currentVal = self.get_entry_value()   
+        calcValues.runningTotal = calcValues.runningTotal + calcValues.currentVal
+        print("The current value in entry is: " + str(calcValues.currentVal))
         print("The current value in total is: " + str(calcValues.runningTotal))
         
         self.user_entry.delete(0, tk.END)
@@ -59,13 +64,10 @@ class MainApp:
         
 
     def get_entry_value(self):
-        if not self.user_entry.get() == "":
-            parsed_input = parse_input(self.user_entry.get())
-            print("Parsed input: " + parsed_input[-1])
-            return int(parsed_input[-1])
-        else:
-            #Need to add event for no input
-            return 0
+        parsed_input = parse_input(self.user_entry.get())
+        print("Parsed input: " + parsed_input[-1])
+        return int(parsed_input[-1])
+    
 
 
     def entry_input_callback(self, input):
@@ -86,19 +88,11 @@ def parse_input(inString):
     return separated_input
 
 
-
-
-
 #initialise required classes
 calcValues = calculator()
 main_window = tk.Tk()
 
 application = MainApp(main_window, calcValues)
-
-#text = tk.Label(text="My Calculator", foreground = "white", background = "black")
-#text.pack()
-
-
 
 main_window.mainloop()
 
