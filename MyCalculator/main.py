@@ -1,11 +1,14 @@
-# Calculator app in a GUI
+# Calculator app in a GUI using tkinter
 
 import tkinter as tk
 
 class calculator:
-   def __init__(self):
+    def __init__(self):
         self.runningTotal = 0
         self.currentVal = 0
+
+    def clearVals(self):
+        self.runningTotal = 0
 
 class MainApp:
     def __init__(self, parent, calcValues):
@@ -16,6 +19,7 @@ class MainApp:
         reg = parent.register(self.entry_input_callback)
         self.user_entry = tk.Entry(master = self.top_frame, validate = "key", validatecommand = (reg, '%P'), bg = "white", fg = "black", justify = "right")
         self.user_entry.pack()
+        self.user_entry.focus_set()
 
         self.label2 = tk.Label(master = self.button_frame, text = "Base")
         self.label2.pack(fill = tk.X)
@@ -30,6 +34,9 @@ class MainApp:
         self.divide_button.pack(fill = tk.X)
         #equals_button = tk.Button(master = button_frame, text = "=", command = lambda: equals_method(total, curentVal))
 
+        self.clear_button = tk.Button(text = "C", command = calcValues.clearVals)
+        self.clear_button.pack()
+
         self.top_frame.pack(side = tk.TOP)
         self.button_frame.pack(side = tk.RIGHT)
 
@@ -41,31 +48,48 @@ class MainApp:
     #adds two integer values
     def add_method(self, calcValues):
 
-        currentVal = int(self.get_entry_value())   
+        currentVal = self.get_entry_value()   
         calcValues.runningTotal = calcValues.runningTotal + currentVal
         print("The current value in entry is: " + str(currentVal))
         print("The current value in total is: " + str(calcValues.runningTotal))
         
+        self.user_entry.delete(0, tk.END)
+        self.user_entry.insert(0, str(calcValues.runningTotal))
         self.user_entry.insert(tk.END, " + ")
+        
 
     def get_entry_value(self):
         if not self.user_entry.get() == "":
-            return int(self.user_entry.get())
+            parsed_input = parse_input(self.user_entry.get())
+            print("Parsed input: " + parsed_input[-1])
+            return int(parsed_input[-1])
         else:
+            #Need to add event for no input
             return 0
 
 
     def entry_input_callback(self, input):
-        if input.isdigit():
-            return True
-        elif input == "":
+        
+        split_input = parse_input(input)
+        print("Raw input: " + input)
+        print("Last key input: " + split_input[-1])
+        
+        if split_input[-1].isdigit():
             return True
         else:
             return False
 
+def parse_input(inString):
+    spaces = inString.count(" ")
+
+    separated_input = inString.split(" ")
+    return separated_input
 
 
-#initialise required settings
+
+
+
+#initialise required classes
 calcValues = calculator()
 main_window = tk.Tk()
 
