@@ -8,6 +8,23 @@ class calculator:
         self.currentVal = 0
         self.currentOperator = ""
 
+    
+    def perform_operation(self, mainApp, input):
+        self.currentVal = int(input)
+        
+        if self.currentOperator == "+":
+            #Perform addition
+            self.runningTotal = self.runningTotal + self.currentVal
+            mainApp.update_top_frame_values(self)
+        elif self.currentOperator == "-":
+            self.runningTotal = self.runningTotal - self.currentVal
+            mainApp.update_top_frame_values(self)
+        elif self.currentOperator == "=":
+            
+        
+        print("The current value in entry is: " + str(self.currentVal))
+        print("The current value in total is: " + str(self.runningTotal))
+
     def validate_input(self, input):
         if input == "":
             return False
@@ -24,27 +41,28 @@ class calculator:
         validInput = self.validate_input(input)
         if validInput:
             self.currentOperator = "+"
-            mainApp.update_top_frame(self, input)
+            self.perform_operation(mainApp, input)
 
     def minus_method(self, mainApp):
         input = mainApp.user_entry.get()
         validInput = self.validate_input(input)
         if validInput:
             self.currentOperator = "-"
-            mainApp.update_top_frame(self, input)
+            self.update_top_frame(mainApp, input)
             #self.runningTotal = self.runningTotal - self.currentVal
     
 
 
     def equalsMethod(self, mainApp):
         input = mainApp.user_entry.get()
-        if not input == "":
-            mainApp.current_total_label.config(text = str(self.runningTotal) + str(self.currentOperator) + input)
+        validInput = self.validate_input(input)
+        if validInput:
+            mainApp.current_total_label.config(text = str(self.runningTotal) + " " + str(self.currentOperator) + " " + input)
 
-            self.currentVal = int(input)
-            self.runningTotal = self.runningTotal + self.currentVal
+            self.currentOperator = "="
 
-            self.currentOperator = " = "
+            self.perform_operation(mainApp, input)
+
             mainApp.current_operator_label.config(text = self.currentOperator)
             mainApp.user_entry.delete(0, tk.END)
             mainApp.user_entry.insert(0, self.runningTotal)
@@ -113,20 +131,6 @@ class MainApp:
         else:
             return False
 
-    def update_top_frame(self, calcValues, input):
-        calcValues.currentVal = int(input)
-        
-        if calcValues.currentOperator == "+":
-            #Perform addition
-            calcValues.runningTotal = calcValues.runningTotal + calcValues.currentVal
-            self.update_top_frame_values(calcValues)
-        elif calcValues.currentOperator == "-":
-            calcValues.runningTotal = calcValues.runningTotal - calcValues.currentVal
-            self.update_top_frame_values(calcValues)
-
-        
-        print("The current value in entry is: " + str(calcValues.currentVal))
-        print("The current value in total is: " + str(calcValues.runningTotal))
         
     def update_top_frame_values(self, calcValues):
         self.current_total_label.config(text = str(calcValues.runningTotal))
