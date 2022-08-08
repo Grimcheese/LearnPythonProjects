@@ -25,8 +25,6 @@ class calculator:
         if validInput:
             self.currentOperator = "+"
             mainApp.update_top_frame(self, input)
-        else:
-            print("No valid input")
 
     def minus_method(self, mainApp):
         input = mainApp.user_entry.get()
@@ -35,6 +33,8 @@ class calculator:
             self.currentOperator = "-"
             mainApp.update_top_frame(self, input)
             #self.runningTotal = self.runningTotal - self.currentVal
+    
+
 
     def equalsMethod(self, mainApp):
         input = mainApp.user_entry.get()
@@ -81,7 +81,7 @@ class MainApp:
 
         self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calcValues.add_method(self))
         self.plus_button.pack(fill = tk.X)
-        self.minus_button = tk.Button(master = self.button_frame, text = "-")
+        self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calcValues.minus_method(self))
         self.minus_button.pack(fill = tk.X)
         self.times_button = tk.Button(master = self.button_frame, text = "X")
         self.times_button.pack(fill = tk.X)
@@ -125,8 +125,8 @@ class MainApp:
             self.update_top_frame_values(calcValues)
 
         
-        print("The current value in entry is: " + str(self.currentVal))
-        print("The current value in total is: " + str(self.runningTotal))
+        print("The current value in entry is: " + str(calcValues.currentVal))
+        print("The current value in total is: " + str(calcValues.runningTotal))
         
     def update_top_frame_values(self, calcValues):
         self.current_total_label.config(text = str(calcValues.runningTotal))
@@ -147,4 +147,3 @@ main_window = tk.Tk()
 application = MainApp(main_window, calcValues)
 
 main_window.mainloop()
-
