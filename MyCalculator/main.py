@@ -1,5 +1,12 @@
 # Calculator app in a GUI using tkinter
 
+############- ISSUES -#############
+# minus_method does not work as expected. Performs subtraction immediately on runningTotal which displays a negative number.
+# equal_method does not work as expected. May require some sort of string parsing to determine what operators to use on values.
+#   Could store state of top_frame widgets previous to entry and then parse that for the correct result.
+#       This may work well for other button widget commands also. Need to see how that will look.  
+
+
 import tkinter as tk
 
 class calculator:
@@ -20,7 +27,7 @@ class calculator:
             self.runningTotal = self.runningTotal - self.currentVal
             mainApp.update_top_frame_values(self)
         elif self.currentOperator == "=":
-            
+
         
         print("The current value in entry is: " + str(self.currentVal))
         print("The current value in total is: " + str(self.runningTotal))
