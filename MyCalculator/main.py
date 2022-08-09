@@ -15,8 +15,19 @@ class StringMath:
     VALIDOPERATORS = ["+", "-", "/", "*", "="]
     
     def __init__(self):
+        self.operation_string = ""
         self.numbers = []
         self.operators = []
+
+    #
+    def append_string(self, new_string):
+        latest_operation_is_valid = self.validate_new_string(new_string)
+        if latest_operation_is_valid:
+            self.operation_string.append(new_string)
+            return True
+        else:
+            print("Not a valid operation to append.")
+
 
     def include_num(self, in_number):
         if in_number.isdigit():
@@ -31,7 +42,9 @@ class StringMath:
         else:
             print("ERROR. StringMath: includeOperator(self, inOperator. Invalid operator provided")
 
-    def validate_operator(self, in_operator):
+    #Two different posibilities: 1/ new_string starts with number
+    #                            2/ new_string starts with a math operator
+    def validate_new_string(self, new_string):
         
         for op in StringMath.VALIDOPERATORS:
             if in_operator == op:
