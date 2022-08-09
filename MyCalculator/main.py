@@ -18,63 +18,62 @@ class StringMath:
         self.numbers = []
         self.operators = []
 
-    def includeNum(self, inNumber):
-        if inNumber.isdigit():
-            self.numbers.append(inNumber)
+    def include_num(self, in_number):
+        if in_number.isdigit():
+            self.numbers.append(in_number)
         else:
             print("ERROR. StringMath: includeNum(self, inNumber. Number not provided")
 
-    def includeOperator(self, inOperator):
+    def include_operator(self, in_operator):
         
-        if self.validateOperator(inOperator):
-            self.operators.append(inOperator)
+        if self.validate_operator(in_operator):
+            self.operators.append(in_operator)
         else:
             print("ERROR. StringMath: includeOperator(self, inOperator. Invalid operator provided")
 
-    def validateOperator(self, inOperator):
+    def validate_operator(self, in_operator):
         
-        for op in StringMath.validOperators:
-            if inOperator == op:
+        for op in StringMath.VALIDOPERATORS:
+            if in_operator == op:
                 return True
 
         return False        
 
     #Performs math operations using the math string that has been built.
-    def DoMath(self):
 
         
 
-class calculator:
+class Calculator:
     def __init__(self):
-        self.runningTotal = 0
-        self.currentVal = 0
-        self.currentOperator = ""
-        self.previousOperator = ""
+        self.running_total = 0
+        self.current_val = 0
+        self.current_operator = ""
+        self.previous_operator = ""
 
-        #New approach to allow for easier manipulation of more numbers and different operators
+        #New approach to allow for easier manipulation of more numbers and different operators -> pushed into new class StringMath
 
     
-    def perform_operation(self, mainApp, inputOperator):
-        input = mainApp.user_entry.get()
+    def perform_operation(self, main_app, input_operator):
+        input = main_app.user_entry.get()
         
         if self.validate_input(input):
-            self.currentVal = int(input)
-            self.currentOperator = inputOperator
+            self.current_val = int(input)
+            self.current_operator = input_operator
             
-            if self.currentOperator == "+":
+            if self.current_operator == "+":
                 #Perform addition
-                self.runningTotal = self.runningTotal + self.currentVal
-                mainApp.update_top_frame_values(self)
-            elif self.currentOperator == "-":
-                self.runningTotal = self.runningTotal - self.currentVal
-                mainApp.update_top_frame_values(self)
+                self.running_total = self.running_total + self.current_val
+                main_app.update_top_frame_values(self)
+            elif self.current_operator == "-":
+                self.running_total = self.running_total - self.current_val
+                main_app.update_top_frame_values(self)
         else:
             print("Invalid input from user_entry widget.")
             print("User input: " + input)
 
         
-        print("The current value in entry is: " + str(self.currentVal))
-        print("The current value in total is: " + str(self.runningTotal))
+        print("The current value in entry is: " + str(self.current_val))
+        print("The current value in total is: " + str(self.running_total))
 
     def validate_input(self, input):
         if input == "":
@@ -87,51 +86,51 @@ class calculator:
             return True
     
     #adds two integer values
-    def add_method(self, mainApp):
-        input = mainApp.user_entry.get()
-        validInput = self.validate_input(input)
-        if validInput:
-            self.currentOperator = "+"
-            self.perform_operation(mainApp, input)
+    def add_method(self, main_app):
+        input = main_app.user_entry.get()
+        valid_input = self.validate_input(input)
+        if valid_input:
+            self.current_operator = "+"
+            self.perform_operation(main_app, input)
 
-    def minus_method(self, mainApp):
-        input = mainApp.user_entry.get()
-        validInput = self.validate_input(input)
-        if validInput:
-            self.currentOperator = "-"
-            self.perform_operation(mainApp, input)
+    def minus_method(self, main_app):
+        input = main_app.user_entry.get()
+        valid_input = self.validate_input(input)
+        if valid_input:
+            self.current_operator = "-"
+            self.perform_operation(main_app, input)
     
 
 
-    def equalsMethod(self, mainApp):
-        input = mainApp.user_entry.get()
-        validInput = self.validate_input(input)
-        print(validInput)
-        if validInput:
-            mainApp.current_total_label.config(text = str(self.runningTotal) + " " + str(self.currentOperator) + " " + input)
+    def equals_method(self, main_app):
+        input = main_app.user_entry.get()
+        valid_input = self.validate_input(input)
+        print(valid_input)
+        if valid_input:
+            main_app.current_total_label.config(text = str(self.running_total) + " " + str(self.current_operator) + " " + input)
 
-            self.currentOperator = "="
+            self.current_operator = "="
 
-            self.perform_operation(mainApp, input)
+            self.perform_operation(main_app, input)
 
-            mainApp.current_operator_label.config(text = self.currentOperator)
-            mainApp.user_entry.delete(0, tk.END)
-            mainApp.user_entry.insert(0, self.runningTotal)
+            main_app.current_operator_label.config(text = self.current_operator)
+            main_app.user_entry.delete(0, tk.END)
+            main_app.user_entry.insert(0, self.running_total)
 
         
 
-    def clearVals(self, mainApp):
-        self.runningTotal = 0
+    def clear_vals(self, main_app):
+        self.running_total = 0
 
-        mainApp.current_total_label.config(text = "")
-        mainApp.current_operator_label.config(text = "")
-        mainApp.user_entry.delete(0, tk.END)
+        main_app.current_total_label.config(text = "")
+        main_app.current_operator_label.config(text = "")
+        main_app.user_entry.delete(0, tk.END)
 
 
     
 
 class MainApp:
-    def __init__(self, parent, calcValues):
+    def __init__(self, parent, calc_values):
         self.top_frame = tk.Frame(master = parent, width = 20)
         self.button_frame = tk.Frame(master = parent, width = 6)
         self.button_frame2 = tk.Frame(master = parent, width = 6) 
@@ -148,18 +147,18 @@ class MainApp:
         self.user_entry.pack(side = tk.RIGHT)
         self.user_entry.focus_set()
 
-        self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calcValues.perform_operation(self, "+"))
+        self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calc_values.perform_operation(self, "+"))
         self.plus_button.pack(fill = tk.X)
-        self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calcValues.perform_operation(self, "-"))
+        self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calc_values.perform_operation(self, "-"))
         self.minus_button.pack(fill = tk.X)
         self.times_button = tk.Button(master = self.button_frame, text = "X")
         self.times_button.pack(fill = tk.X)
         self.divide_button = tk.Button(master = self.button_frame, text = "/")
         self.divide_button.pack(fill = tk.X)
 
-        self.clear_button = tk.Button(master = self.button_frame2, text = "C", command = lambda: calcValues.clearVals(self))
+        self.clear_button = tk.Button(master = self.button_frame2, text = "C", command = lambda: calc_values.clear_vals(self))
         self.clear_button.pack()
-        self.equals_button = tk.Button(master = self.button_frame2, text = "=", command = lambda: calcValues.equalsMethod(self))
+        self.equals_button = tk.Button(master = self.button_frame2, text = "=", command = lambda: calc_values.equals_method(self))
         self.equals_button.pack()
 
         self.top_frame.pack(side = tk.TOP)
@@ -183,22 +182,22 @@ class MainApp:
             return False
 
         
-    def update_top_frame_values(self, calcValues):
-        self.current_total_label.config(text = str(calcValues.runningTotal))
-        self.current_operator_label.config(text = calcValues.currentOperator)
+    def update_top_frame_values(self, calc_values):
+        self.current_total_label.config(text = str(calc_values.running_total))
+        self.current_operator_label.config(text = calc_values.current_operator)
         self.user_entry.delete(0, tk.END)
 
-def parse_input(inString):
-    spaces = inString.count(" ")
+def parse_input(in_string):
+    spaces = in_string.count(" ")
 
-    separated_input = inString.split(" ")
+    separated_input = in_string.split(" ")
     return separated_input
 
 
 #initialise required classes
-calcValues = calculator()
+calc_values = Calculator()
 main_window = tk.Tk()
 
-application = MainApp(main_window, calcValues)
+application = MainApp(main_window, calc_values)
 
 main_window.mainloop()
