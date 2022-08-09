@@ -9,24 +9,68 @@
 
 import tkinter as tk
 
+# Class that takes in numbers and operators as strings and performs simple arithmetic functions on them 
+# Build a "MathString" by appending numbers and operators, then parse the string to do maths on it.
+class StringMath:
+    VALIDOPERATORS = ["+", "-", "/", "*", "="]
+    
+    def __init__(self):
+        self.numbers = []
+        self.operators = []
+
+    def includeNum(self, inNumber):
+        if inNumber.isdigit():
+            self.numbers.append(inNumber)
+        else:
+            print("ERROR. StringMath: includeNum(self, inNumber. Number not provided")
+
+    def includeOperator(self, inOperator):
+        
+        if self.validateOperator(inOperator):
+            self.operators.append(inOperator)
+        else:
+            print("ERROR. StringMath: includeOperator(self, inOperator. Invalid operator provided")
+
+    def validateOperator(self, inOperator):
+        
+        for op in StringMath.validOperators:
+            if inOperator == op:
+                return True
+
+        return False        
+
+    #Performs math operations using the math string that has been built.
+    def DoMath(self):
+
+        
+
 class calculator:
     def __init__(self):
         self.runningTotal = 0
         self.currentVal = 0
         self.currentOperator = ""
+        self.previousOperator = ""
+
+        #New approach to allow for easier manipulation of more numbers and different operators
 
     
-    def perform_operation(self, mainApp, input):
-        self.currentVal = int(input)
+    def perform_operation(self, mainApp, inputOperator):
+        input = mainApp.user_entry.get()
         
-        if self.currentOperator == "+":
-            #Perform addition
-            self.runningTotal = self.runningTotal + self.currentVal
-            mainApp.update_top_frame_values(self)
-        elif self.currentOperator == "-":
-            self.runningTotal = self.runningTotal - self.currentVal
-            mainApp.update_top_frame_values(self)
-        elif self.currentOperator == "=":
+        if self.validate_input(input):
+            self.currentVal = int(input)
+            self.currentOperator = inputOperator
+            
+            if self.currentOperator == "+":
+                #Perform addition
+                self.runningTotal = self.runningTotal + self.currentVal
+                mainApp.update_top_frame_values(self)
+            elif self.currentOperator == "-":
+                self.runningTotal = self.runningTotal - self.currentVal
+                mainApp.update_top_frame_values(self)
+        else:
+            print("Invalid input from user_entry widget.")
+            print("User input: " + input)
 
         
         print("The current value in entry is: " + str(self.currentVal))
@@ -55,14 +99,14 @@ class calculator:
         validInput = self.validate_input(input)
         if validInput:
             self.currentOperator = "-"
-            self.update_top_frame(mainApp, input)
-            #self.runningTotal = self.runningTotal - self.currentVal
+            self.perform_operation(mainApp, input)
     
 
 
     def equalsMethod(self, mainApp):
         input = mainApp.user_entry.get()
         validInput = self.validate_input(input)
+        print(validInput)
         if validInput:
             mainApp.current_total_label.config(text = str(self.runningTotal) + " " + str(self.currentOperator) + " " + input)
 
@@ -104,9 +148,9 @@ class MainApp:
         self.user_entry.pack(side = tk.RIGHT)
         self.user_entry.focus_set()
 
-        self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calcValues.add_method(self))
+        self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calcValues.perform_operation(self, "+"))
         self.plus_button.pack(fill = tk.X)
-        self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calcValues.minus_method(self))
+        self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calcValues.perform_operation(self, "-"))
         self.minus_button.pack(fill = tk.X)
         self.times_button = tk.Button(master = self.button_frame, text = "X")
         self.times_button.pack(fill = tk.X)
