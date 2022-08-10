@@ -11,48 +11,77 @@ import tkinter as tk
 
 # Class that takes in numbers and operators as strings and performs simple arithmetic functions on them 
 # Build a "MathString" by appending numbers and operators, then parse the string to do maths on it.
+# Two main methods for use of Class: appen_string() and execute_string()
+# Essentially just build the string and execute the math
 class StringMath:
     VALIDOPERATORS = ["+", "-", "/", "*", "="]
     
     def __init__(self):
         self.operation_string = ""
+        self.end_char = 1
         self.numbers = []
         self.operators = []
 
+    def stringmath_string(self):
+        print(self.operation_string)
+        return self.operation_string
+
     #
     def append_string(self, new_string):
-        latest_operation_is_valid = self.validate_new_string(new_string)
+        latest_operation_is_valid = self.validate_append(new_string)
         if latest_operation_is_valid:
             self.operation_string.append(new_string)
             return True
         else:
             print("Not a valid operation to append.")
 
-
-    def include_num(self, in_number):
-        if in_number.isdigit():
-            self.numbers.append(in_number)
-        else:
-            print("ERROR. StringMath: includeNum(self, inNumber. Number not provided")
-
-    def include_operator(self, in_operator):
-        
-        if self.validate_operator(in_operator):
-            self.operators.append(in_operator)
-        else:
-            print("ERROR. StringMath: includeOperator(self, inOperator. Invalid operator provided")
-
     #Two different posibilities: 1/ new_string starts with number
     #                            2/ new_string starts with a math operator
-    def validate_new_string(self, new_string):
-        
+    def validate_append(self, new_string):
+        # Need to ensure that the new_string is valid and can be appended
+        # to the current operation_string
+
+        new_string_valid = StringMath.validate_string(new_string)
+        if new_string_valid:
+            #Check first "character" of new string to see if it is compatible
+            new_end_char = StringMath.digit_operator_check(new_string[0])
+            if new_end_char == -1:
+                print("New string starts with an invalid character")
+            elif self.end_char is not new_end_char:
+                self.operation_string.append(" " + new_string)
+            else:
+                print("Unable to append that to current string")
+                print("Current string: " + self.operation_string)
+    
+    #Returns integer number to varify what type of input is received
+    #       0 : Digit
+    #       1 : Valid Operator
+    #      -1 : An invalid character
+    @classmethod
+    def digit_operator_check(cls, in_char):
+        if in_char.isdigit():
+            return 0
+        elif StringMath.validate_operator(in_char):
+            return 1
+        else:
+            return -1
+
+    @classmethod
+    def validate_string(cls, in_string):
+        split_str = in_string.split(" ")
+        for split_char in split_str:
+            if not (split_char.isdigit() or StringMath.validate_operator(split_char)): 
+                #Character is not a valid operator
+                return False
+        return True 
+    
+    @classmethod
+    def validate_operator(cls, test_operator):
         for op in StringMath.VALIDOPERATORS:
-            if in_operator == op:
+            if test_operator == op:
                 return True
+        return False # if no match then test_operator is not valid
 
-        return False        
-
-    #Performs math operations using the math string that has been built.
 
         
 
@@ -206,11 +235,11 @@ def parse_input(in_string):
     separated_input = in_string.split(" ")
     return separated_input
 
-
+#only required when actually running program
 #initialise required classes
-calc_values = Calculator()
-main_window = tk.Tk()
+#calc_values = Calculator()
+#main_window = tk.Tk()
 
-application = MainApp(main_window, calc_values)
+#application = MainApp(main_window, calc_values)
 
-main_window.mainloop()
+#main_window.mainloop()
