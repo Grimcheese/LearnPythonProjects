@@ -18,4 +18,9 @@ def StringMath_test():
     sm_test.append_string("+")
     sm_test.stringmath_string()
 
+    sm_test2 = StringMath()
+    sm_test2.append_string("5 + 2 * 3 / 4")
+    sm_test2.stringmath_string()
+    print(sm_test2.execute_string())
+
 run_test()

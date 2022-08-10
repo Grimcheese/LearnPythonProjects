@@ -26,6 +26,57 @@ class StringMath:
         print("Operation string: " + self.operation_string + ".")
         return self.operation_string
 
+    def execute_string(self):
+        split_string = self.operation_string.split(" ")
+        
+        split_string = self.check_for_operation(split_string, "*")
+        split_string = self.check_for_operation(split_string, "/")
+        split_string = self.check_for_operation(split_string, "+")
+        split_string = self.check_for_operation(split_string, "-")
+
+        return split_string
+
+    def check_for_operation(self, split_string, operator):
+        for i in range(split_string.count(operator)):
+            index = split_string.index(operator)
+            print("The index for " + operator + " is: " + str(index))
+            if operator == "/":
+                temp_result = self.divide(split_string[index - 1], split_string[index + 1])
+            elif operator == "*":
+                temp_result = self.multiply(split_string[index - 1], split_string[index + 1])
+            elif operator == "+":
+                temp_result = self.add(split_string[index - 1], split_string[index + 1])
+            elif operator == "-":
+                temp_result = self.subtract(split_string[index - 1], split_string[index + 1])
+            
+            print("Removing: " + split_string[index - 1])
+            del split_string[index - 1]
+            print("Removing: " + split_string[index - 1])
+            del split_string[index - 1]
+            print("Removing: " + split_string[index - 1])
+            del split_string[index - 1]
+
+            print("Inserting: " + temp_result)
+            split_string.insert(index - 1, temp_result)
+
+            print(split_string)
+
+        return split_string
+
+    def divide(self, val1, val2):
+        print("Dividing " + val1 + " by " + val2)
+        return str(float(val1) / float(val2))
+
+    def multiply(self, val1, val2):
+        return str(float(val1) * float(val2))
+
+    def add(self, val1, val2):
+        return str(float(val1) + float(val2))
+
+    def subtract(self, val1, val2):
+        return str(float(val1) - float(val2))
+
+
     #
     def append_string(self, new_string):
         latest_operation_is_valid = self.validate_append(new_string)
