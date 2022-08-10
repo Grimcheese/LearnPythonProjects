@@ -16,16 +16,46 @@ import tkinter as tk
 class StringMath:
     VALIDOPERATORS = ["+", "-", "/", "*", "="]
     
-    def __init__(self):
-        self.operation_string = ""
+    def __init__(self, initial = None):
+        if initial == None:
+            self.operation_string = ""
+        else:
+            self.operation_string = initial
         self.end_char = 1
-        self.numbers = []
-        self.operators = []
 
-    def stringmath_string(self):
+    # Prints the full string saved in the StringMath class then returns it
+    def string(self):
         print("Operation string: " + self.operation_string + ".")
         return self.operation_string
 
+    def isempty(self):
+        if self.operation_string == "":
+            return True
+        else:
+            return False
+
+    # Appends a new string to the current operation_string.
+    # Performs validation checking
+    def append(self, new_string):
+        latest_operation_is_valid = self.validate_append(new_string)
+        if latest_operation_is_valid:
+            if self.operation_string == "":
+                self.operation_string = new_string
+            else:
+                self.operation_string = self.operation_string + " " + new_string
+            print(new_string + " added to string")
+            self.end_char = StringMath.digit_operator_check(self.operation_string[-1])
+            return True
+        else:
+            print("Not a valid operation to append.")
+            return False
+
+    # Returns the object to a cleared state
+    def clear(self):
+        self.operation_string = ""
+        self.end_char = 1
+
+    # Carries out the math equation that is represented by the string
     def execute_string(self):
         split_string = self.operation_string.split(" ")
         
@@ -76,21 +106,6 @@ class StringMath:
     def subtract(self, val1, val2):
         return str(float(val1) - float(val2))
 
-
-    #
-    def append_string(self, new_string):
-        latest_operation_is_valid = self.validate_append(new_string)
-        if latest_operation_is_valid:
-            if self.operation_string == "":
-                self.operation_string = new_string
-            else:
-                self.operation_string = self.operation_string + " " + new_string
-            print(new_string + " added to string")
-            self.end_char = StringMath.digit_operator_check(self.operation_string[-1])
-            return True
-        else:
-            print("Not a valid operation to append.")
-            return False
 
     #Two different posibilities: 1/ new_string starts with number
     #                            2/ new_string starts with a math operator
@@ -155,11 +170,20 @@ class Calculator:
         self.previous_operator = ""
 
         #New approach to allow for easier manipulation of more numbers and different operators -> pushed into new class StringMath
+        self.memory_display = StringMath()
 
-    
+    def add_to_calc(self,main_app, operator):
+        input = main_app.user_entry.get()
+        self.memory_display.append(input + " " + operator)
+
+        main_app.current_total_label.config(text = self.memory_display.string())
+        main_app.user_entry.delete(0, tk.END)
+
+    # PART OF OLD IMPLEMENTATION
     def perform_operation(self, main_app, input_operator):
         input = main_app.user_entry.get()
         
+        # OLD IMPLEMENTATION - MAY NEED TO BE REMOVED
         if self.validate_input(input):
             self.current_val = int(input)
             self.current_operator = input_operator
@@ -207,24 +231,19 @@ class Calculator:
 
 
     def equals_method(self, main_app):
-        input = main_app.user_entry.get()
-        valid_input = self.validate_input(input)
-        print(valid_input)
-        if valid_input:
-            main_app.current_total_label.config(text = str(self.running_total) + " " + str(self.current_operator) + " " + input)
+        final_input = main_app.user_entry.get()
+        self.memory_display.append(final_input)
 
-            self.current_operator = "="
+        solution = self.memory_display.execute_string()
 
-            self.perform_operation(main_app, input)
-
-            main_app.current_operator_label.config(text = self.current_operator)
-            main_app.user_entry.delete(0, tk.END)
-            main_app.user_entry.insert(0, self.running_total)
+        main_app.current_total_label.config(text = self.memory_display.string())
+        main_app.user_entry.delete(0, tk.END)
+        main_app.user_entry.insert(0, solution)
 
         
 
     def clear_vals(self, main_app):
-        self.running_total = 0
+        self.memory_display.clear()
 
         main_app.current_total_label.config(text = "")
         main_app.current_operator_label.config(text = "")
@@ -251,13 +270,13 @@ class MainApp:
         self.user_entry.pack(side = tk.RIGHT)
         self.user_entry.focus_set()
 
-        self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calc_values.perform_operation(self, "+"))
+        self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calc_values.add_to_calc(self, "+"))
         self.plus_button.pack(fill = tk.X)
-        self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calc_values.perform_operation(self, "-"))
+        self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calc_values.add_to_calc(self, "-"))
         self.minus_button.pack(fill = tk.X)
-        self.times_button = tk.Button(master = self.button_frame, text = "X")
+        self.times_button = tk.Button(master = self.button_frame, text = "*", command = lambda: calc_values.add_to_calc(self, "*"))
         self.times_button.pack(fill = tk.X)
-        self.divide_button = tk.Button(master = self.button_frame, text = "/")
+        self.divide_button = tk.Button(master = self.button_frame, text = "/", command = lambda: calc_values.add_to_calc(self, "/"))
         self.divide_button.pack(fill = tk.X)
 
         self.clear_button = tk.Button(master = self.button_frame2, text = "C", command = lambda: calc_values.clear_vals(self))
@@ -278,12 +297,20 @@ class MainApp:
         
         if input.isdigit():
             return True
-        elif input == "":
+        elif self.is_float(input):
             return True
-        elif input == "+":
+        elif input == "":
             return True
         else:
             return False
+
+    def is_float(self, num_str):
+        try:
+            float(num_str)
+            return True
+        except ValueError:
+            return False
+
 
         
     def update_top_frame_values(self, calc_values):
@@ -299,9 +326,9 @@ def parse_input(in_string):
 
 #only required when actually running program
 #initialise required classes
-#calc_values = Calculator()
-#main_window = tk.Tk()
+calc_values = Calculator()
+main_window = tk.Tk()
 
-#application = MainApp(main_window, calc_values)
+application = MainApp(main_window, calc_values)
 
-#main_window.mainloop()
+main_window.mainloop()
