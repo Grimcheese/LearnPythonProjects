@@ -1,17 +1,14 @@
 # Calculator app in a GUI using tkinter
 
 ############- ISSUES -#############
-# minus_method does not work as expected. Performs subtraction immediately on runningTotal which displays a negative number.
-# equal_method does not work as expected. May require some sort of string parsing to determine what operators to use on values.
-#   Could store state of top_frame widgets previous to entry and then parse that for the correct result.
-#       This may work well for other button widget commands also. Need to see how that will look.  
+# No negative numbers currently supported
 
 
 import tkinter as tk
 
 # Class that takes in numbers and operators as strings and performs simple arithmetic functions on them 
-# Build a "MathString" by appending numbers and operators, then parse the string to do maths on it.
-# Two main methods for use of Class: appen_string() and execute_string()
+# Build a "MathString" by appending numbers and operators, then evaluate the equation represented in the string.
+# Two main methods for use of Class: append() and execute_string()
 # Essentially just build the string and execute the math
 class StringMath:
     VALIDOPERATORS = ["+", "-", "/", "*", "="]
@@ -137,6 +134,8 @@ class StringMath:
     def digit_operator_check(cls, in_char):
         if in_char.isdigit():
             return 0
+        elif is_float(in_char):
+            return 0
         elif StringMath.validate_operator(in_char):
             return 1
         else:
@@ -146,7 +145,7 @@ class StringMath:
     def validate_string(cls, in_string):
         split_str = in_string.split(" ")
         for split_char in split_str:
-            if not (split_char.isdigit() or StringMath.validate_operator(split_char)): 
+            if not (split_char.isdigit() or is_float(split_char) or StringMath.validate_operator(split_char)): 
                 #Character is not a valid operator
                 print(split_char + " <-- is not valid")
                 return False
@@ -161,16 +160,12 @@ class StringMath:
 
 
         
-
+# Calculator is used by MainApp to store and perform the mathematic functions of the "Calculator"
+# Calculator relies on StringMath to be able to store equations as strings and then evaluate them
 class Calculator:
     def __init__(self):
-        self.running_total = 0
-        self.current_val = 0
-        self.current_operator = ""
-        self.previous_operator = ""
-
-        #New approach to allow for easier manipulation of more numbers and different operators -> pushed into new class StringMath
         self.memory_display = StringMath()
+        self.prev_mem_display = StringMath()
 
     def add_to_calc(self,main_app, operator):
         input = main_app.user_entry.get()
@@ -178,57 +173,6 @@ class Calculator:
 
         main_app.current_total_label.config(text = self.memory_display.string())
         main_app.user_entry.delete(0, tk.END)
-
-    # PART OF OLD IMPLEMENTATION
-    def perform_operation(self, main_app, input_operator):
-        input = main_app.user_entry.get()
-        
-        # OLD IMPLEMENTATION - MAY NEED TO BE REMOVED
-        if self.validate_input(input):
-            self.current_val = int(input)
-            self.current_operator = input_operator
-            
-            if self.current_operator == "+":
-                #Perform addition
-                self.running_total = self.running_total + self.current_val
-                main_app.update_top_frame_values(self)
-            elif self.current_operator == "-":
-                self.running_total = self.running_total - self.current_val
-                main_app.update_top_frame_values(self)
-        else:
-            print("Invalid input from user_entry widget.")
-            print("User input: " + input)
-
-        
-        print("The current value in entry is: " + str(self.current_val))
-        print("The current value in total is: " + str(self.running_total))
-
-    def validate_input(self, input):
-        if input == "":
-            return False
-        elif input == "+":
-            return False
-        elif input == "-":
-            return False
-        else:
-            return True
-    
-    #adds two integer values
-    def add_method(self, main_app):
-        input = main_app.user_entry.get()
-        valid_input = self.validate_input(input)
-        if valid_input:
-            self.current_operator = "+"
-            self.perform_operation(main_app, input)
-
-    def minus_method(self, main_app):
-        input = main_app.user_entry.get()
-        valid_input = self.validate_input(input)
-        if valid_input:
-            self.current_operator = "-"
-            self.perform_operation(main_app, input)
-    
-
 
     def equals_method(self, main_app):
         final_input = main_app.user_entry.get()
@@ -240,7 +184,8 @@ class Calculator:
         main_app.user_entry.delete(0, tk.END)
         main_app.user_entry.insert(0, solution)
 
-        
+        self.prev_mem_display = self.memory_display
+        self.memory_display.clear()
 
     def clear_vals(self, main_app):
         self.memory_display.clear()
@@ -251,7 +196,8 @@ class Calculator:
 
 
     
-
+# MainApp defines what the GUI looks like to the user and how it will behave
+# All information is stored in Calculator.calc_values
 class MainApp:
     def __init__(self, parent, calc_values):
         self.top_frame = tk.Frame(master = parent, width = 20)
@@ -288,8 +234,6 @@ class MainApp:
         self.button_frame.pack(side = tk.RIGHT)
         self.button_frame2.pack(side = tk.RIGHT)
 
-        #self.user_entry.config(validate = "key", validatecommand = (reg, '%P'))
-
     def entry_input_callback(self, input):
         
         print("Raw input: " + input)
@@ -297,32 +241,20 @@ class MainApp:
         
         if input.isdigit():
             return True
-        elif self.is_float(input):
+        elif is_float(input):
             return True
         elif input == "":
             return True
         else:
             return False
 
-    def is_float(self, num_str):
-        try:
-            float(num_str)
-            return True
-        except ValueError:
-            return False
 
-
-        
-    def update_top_frame_values(self, calc_values):
-        self.current_total_label.config(text = str(calc_values.running_total))
-        self.current_operator_label.config(text = calc_values.current_operator)
-        self.user_entry.delete(0, tk.END)
-
-def parse_input(in_string):
-    spaces = in_string.count(" ")
-
-    separated_input = in_string.split(" ")
-    return separated_input
+def is_float(num_str):
+    try:
+        float(num_str)
+        return True
+    except ValueError:
+        return False
 
 #only required when actually running program
 #initialise required classes
