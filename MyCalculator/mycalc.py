@@ -60,27 +60,32 @@ class StringMath:
         self.end_char = 1
 
     # Carries out the math equation that is represented by the string
+    # This section defines the order that operations are carried out 
     def execute_string(self):
         split_string = self.operation_string.split(" ")
-        
-        split_string = self.check_for_operation(split_string, "*")
-        split_string = self.check_for_operation(split_string, "/")
-        split_string = self.check_for_operation(split_string, "+")
-        split_string = self.check_for_operation(split_string, "-")
+        print("Calculating equation!")
+        self.string()
+
+        split_string = self.check_for_operation(split_string, "*", "/")
+        split_string = self.check_for_operation(split_string, "+", "-")
 
         return split_string
 
-    def check_for_operation(self, split_string, operator):
-        for i in range(split_string.count(operator)):
-            index = split_string.index(operator)
-            print("The index for " + operator + " is: " + str(index))
-            if operator == "/":
+    def check_for_operation(self, split_string, op1, op2 = ""):
+        if op2 == "":
+            operator_counts = split_string.count(op1)
+        else:
+            operator_counts = split_string.count(op1) + split_string.count(op2)
+
+        for i in range(operator_counts):
+            index = self.find_first_operator_index(split_string, op1, op2)
+            if split_string[index] == "/":
                 temp_result = self.divide(split_string[index - 1], split_string[index + 1])
-            elif operator == "*":
+            elif split_string[index] == "*":
                 temp_result = self.multiply(split_string[index - 1], split_string[index + 1])
-            elif operator == "+":
+            elif split_string[index] == "+":
                 temp_result = self.add(split_string[index - 1], split_string[index + 1])
-            elif operator == "-":
+            elif split_string[index] == "-":
                 temp_result = self.subtract(split_string[index - 1], split_string[index + 1])
             
             print("Removing: " + split_string[index - 1])
@@ -96,18 +101,43 @@ class StringMath:
             print(split_string)
 
         return split_string
+    
+    def find_first_operator_index(self, split_string, op1, op2):
+        count1 = split_string.count(op1)
+        count2 = split_string.count(op2)
+
+        index1, index2 = -1, -1
+        if count1 > 0:
+            index1 = split_string.index(op1)
+        if count2 > 0:
+            index2 = split_string.index(op2)
+
+        if index1 == -1 or index2 == -1:
+            if index1 == -1:
+                return_index = index2
+            else:
+                return_index = index1
+        elif index1 < index2:
+            return_index = index1
+        else:
+            return_index = index2
+        
+        return return_index
 
     def divide(self, val1, val2):
         print("Dividing " + val1 + " by " + val2)
         return str(float(val1) / float(val2))
 
     def multiply(self, val1, val2):
+        print("Multiplying " + val1 + " by " + val2)
         return str(float(val1) * float(val2))
 
     def add(self, val1, val2):
+        print("Adding " + val1 + " to " + val2)
         return str(float(val1) + float(val2))
 
     def subtract(self, val1, val2):
+        print("Subtracting " + val2 + " from " + val1)
         return str(float(val1) - float(val2))
 
 
@@ -207,7 +237,7 @@ class Calculator:
         main_app.user_entry.delete(0, tk.END)
 
     def operator_keypress(self, event, main_app):
-        if event.char == "=":
+        if event.char == "=" or event.keysym == "Return":
             self.equals_method(main_app)
         elif self.memory_display.isempty():
             self.add_to_calc(main_app, event.char)
@@ -220,7 +250,7 @@ class Calculator:
 
     
 # MainApp defines what the GUI looks like to the user and how it will behave
-# All information is stored in Calculator.calc_values
+# All calculations are done in Calculator.calc_values
 class MainApp:
     def __init__(self, parent, calc_values):
         self.top_frame = tk.Frame(master = parent, width = 20)
@@ -256,7 +286,7 @@ class MainApp:
 
         self.callbacks(calc_values)
 
-    # Defining the callback method allows for passing extra parameters using default parameters
+    # Defining the callback method within this namespace allows for passing extra parameters using default parameters
     def callbacks(self, calc_values):
         def handle_operator_keypress(event, self = self, calc_values = calc_values):
             calc_values.operator_keypress(event, self)
@@ -266,6 +296,7 @@ class MainApp:
         self.user_entry.bind("*", handle_operator_keypress)
 
         self.user_entry.bind("=", handle_operator_keypress)
+        self.user_entry.bind("<KeyPress-Return>", handle_operator_keypress)
 
 
     def entry_input_callback(self, input):
