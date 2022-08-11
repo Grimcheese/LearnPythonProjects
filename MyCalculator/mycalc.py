@@ -30,6 +30,13 @@ class StringMath:
             return True
         else:
             return False
+    # Return True if last character of equation is a digit
+    def terminating_operator(self):
+        if self.validate_operator(self.operation_string[-1]):
+            return True
+        else:
+            return False
+
 
     # Appends a new string to the current operation_string.
     # Performs validation checking
@@ -169,30 +176,46 @@ class Calculator:
 
     def add_to_calc(self,main_app, operator):
         input = main_app.user_entry.get()
-        self.memory_display.append(input + " " + operator)
-
-        main_app.current_total_label.config(text = self.memory_display.string())
-        main_app.user_entry.delete(0, tk.END)
+        if self.memory_display.append(input + " " + operator):
+            main_app.current_total_label.config(text = self.memory_display.string())
+            main_app.user_entry.delete(0, tk.END)
 
     def equals_method(self, main_app):
         final_input = main_app.user_entry.get()
-        self.memory_display.append(final_input)
+        if self.memory_display.append(final_input):
 
-        solution = self.memory_display.execute_string()
+            solution = self.memory_display.execute_string()
 
-        main_app.current_total_label.config(text = self.memory_display.string())
+            self.update_display(main_app, solution, "=")
+
+            self.prev_mem_display = self.memory_display
+            self.memory_display.clear()
+        else:
+            solution = self.memory_display.execute_string()
+            self.update_display(main_app, solution, "=")
+
+    def update_display(self, main_app, entry_val = "", optional_character = ""):
+        main_app.current_total_label.config(text = self.memory_display.string() + " " + optional_character)
         main_app.user_entry.delete(0, tk.END)
-        main_app.user_entry.insert(0, solution)
-
-        self.prev_mem_display = self.memory_display
-        self.memory_display.clear()
+        if not entry_val == "" :
+            main_app.user_entry.insert(0, entry_val)
 
     def clear_vals(self, main_app):
         self.memory_display.clear()
 
         main_app.current_total_label.config(text = "")
-        main_app.current_operator_label.config(text = "")
         main_app.user_entry.delete(0, tk.END)
+
+    def operator_keypress(self, event, main_app):
+        if event.char == "=":
+            self.equals_method(main_app)
+        elif self.memory_display.isempty():
+            self.add_to_calc(main_app, event.char)
+        else: # Need to check if waiting for number or operator
+            if self.memory_display.terminating_operator():
+                self.add_to_calc(main_app, event.char)
+            else:
+                self.memory_display.append(event.char)
 
 
     
@@ -205,11 +228,8 @@ class MainApp:
         self.button_frame2 = tk.Frame(master = parent, width = 6) 
         
 
-        self.current_total_label = tk.Label(master = self.top_frame, bg = "white", fg = "black", width = 5)
+        self.current_total_label = tk.Label(master = self.top_frame, bg = "white", fg = "black", width = 10)
         self.current_total_label.pack(side = tk.LEFT)
-
-        self.current_operator_label = tk.Label(master = self.top_frame, bg = "white", fg = "black", width = 5)
-        self.current_operator_label.pack(side = tk.LEFT)
 
         reg = parent.register(self.entry_input_callback)
         self.user_entry = tk.Entry(master = self.top_frame, validate = "key", validatecommand = (reg, '%P'), relief = tk.FLAT, bg = "white", fg = "black", justify = "right", width = 10)
@@ -234,20 +254,35 @@ class MainApp:
         self.button_frame.pack(side = tk.RIGHT)
         self.button_frame2.pack(side = tk.RIGHT)
 
+        self.callbacks(calc_values)
+
+    # Defining the callback method allows for passing extra parameters using default parameters
+    def callbacks(self, calc_values):
+        def handle_operator_keypress(event, self = self, calc_values = calc_values):
+            calc_values.operator_keypress(event, self)
+        self.user_entry.bind("+", handle_operator_keypress)
+        self.user_entry.bind("-", handle_operator_keypress)
+        self.user_entry.bind("/", handle_operator_keypress)
+        self.user_entry.bind("*", handle_operator_keypress)
+
+        self.user_entry.bind("=", handle_operator_keypress)
+
+
     def entry_input_callback(self, input):
         
         print("Raw input: " + input)
         print("Last key input: " + input)
         
-        if input.isdigit():
-            return True
-        elif is_float(input):
-            return True
-        elif input == "":
+
+        length = len(input)
+        if length == 0:
             return True
         else:
+            if StringMath.validate_operator(input[-1]):
+                return False #Requires callback from MainApp to deal with operators
+            elif StringMath.validate_string(input):
+                return True
             return False
-
 
 def is_float(num_str):
     try:
