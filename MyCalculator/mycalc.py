@@ -154,6 +154,9 @@ class StringMath:
             if new_end_char == -1:
                 print("New string starts with an invalid character")
                 return False
+            elif new_string[0] == "-":
+                print("Appending negative number: " + new_string)
+                return True
             elif self.end_char is not new_end_char:
                 return True
             else:
@@ -237,15 +240,19 @@ class Calculator:
         main_app.user_entry.delete(0, tk.END)
 
     def operator_keypress(self, event, main_app):
+        input = main_app.user_entry.get()
+        print("Event bind triggered. " + event.char)
         if event.char == "=" or event.keysym == "Return":
             self.equals_method(main_app)
         elif self.memory_display.isempty():
-            self.add_to_calc(main_app, event.char)
-        else: # Need to check if waiting for number or operator
-            if self.memory_display.terminating_operator():
+            if not input == "-":
                 self.add_to_calc(main_app, event.char)
-            else:
-                self.memory_display.append(event.char)
+        else: # Need to check if waiting for number or operator
+            if not input == "-":
+                if self.memory_display.terminating_operator():
+                    self.add_to_calc(main_app, event.char)
+                else:
+                    self.memory_display.append(event.char)
 
 
     
@@ -253,36 +260,33 @@ class Calculator:
 # All calculations are done in Calculator.calc_values
 class MainApp:
     def __init__(self, parent, calc_values):
-        self.top_frame = tk.Frame(master = parent, width = 20)
-        self.button_frame = tk.Frame(master = parent, width = 6)
-        self.button_frame2 = tk.Frame(master = parent, width = 6) 
-        
+        self.top_frame = tk.Frame(master = parent, width = 30)
+        self.button_frame = tk.Frame(master = parent, width = 30)
 
-        self.current_total_label = tk.Label(master = self.top_frame, bg = "white", fg = "black", width = 10)
-        self.current_total_label.pack(side = tk.LEFT)
+        self.current_total_label = tk.Label(master = self.top_frame, bg = "grey", fg = "black", width = 15)
+        self.current_total_label.grid(column = 0, row = 0)
 
         reg = parent.register(self.entry_input_callback)
-        self.user_entry = tk.Entry(master = self.top_frame, validate = "key", validatecommand = (reg, '%P'), relief = tk.FLAT, bg = "white", fg = "black", justify = "right", width = 10)
-        self.user_entry.pack(side = tk.RIGHT)
+        self.user_entry = tk.Entry(master = self.top_frame, validate = "key", validatecommand = (reg, '%P'), relief = tk.FLAT, bg = "grey", fg = "black", justify = "right", width = 15)
+        self.user_entry.grid(column = 1, row = 0)
         self.user_entry.focus_set()
 
         self.plus_button = tk.Button(master = self.button_frame, text = "+", command=lambda: calc_values.add_to_calc(self, "+"))
-        self.plus_button.pack(fill = tk.X)
+        self.plus_button.grid(column = 0, row = 0)
         self.minus_button = tk.Button(master = self.button_frame, text = "-", command = lambda: calc_values.add_to_calc(self, "-"))
-        self.minus_button.pack(fill = tk.X)
+        self.minus_button.grid(column = 1, row = 0)
         self.times_button = tk.Button(master = self.button_frame, text = "*", command = lambda: calc_values.add_to_calc(self, "*"))
-        self.times_button.pack(fill = tk.X)
+        self.times_button.grid(column = 2, row = 0)
         self.divide_button = tk.Button(master = self.button_frame, text = "/", command = lambda: calc_values.add_to_calc(self, "/"))
-        self.divide_button.pack(fill = tk.X)
+        self.divide_button.grid(column = 3, row = 0)
 
-        self.clear_button = tk.Button(master = self.button_frame2, text = "C", command = lambda: calc_values.clear_vals(self))
-        self.clear_button.pack()
-        self.equals_button = tk.Button(master = self.button_frame2, text = "=", command = lambda: calc_values.equals_method(self))
-        self.equals_button.pack()
+        self.clear_button = tk.Button(master = self.button_frame, text = "C", command = lambda: calc_values.clear_vals(self))
+        self.clear_button.grid(column = 4, row = 0)
+        self.equals_button = tk.Button(master = self.button_frame, text = "=", command = lambda: calc_values.equals_method(self))
+        self.equals_button.grid(column = 5, row = 0)
 
-        self.top_frame.pack(side = tk.TOP)
-        self.button_frame.pack(side = tk.RIGHT)
-        self.button_frame2.pack(side = tk.RIGHT)
+        self.top_frame.grid(column = 0, row = 0)
+        self.button_frame.grid(column = 0, row = 1)
 
         self.callbacks(calc_values)
 
@@ -309,9 +313,11 @@ class MainApp:
         if length == 0:
             return True
         else:
-            if StringMath.validate_operator(input[-1]):
-                return False #Requires callback from MainApp to deal with operators
-            elif StringMath.validate_string(input):
+            if input == "-":
+                return True
+            elif StringMath.validate_operator(input):
+                return False
+            if StringMath.validate_string(input):
                 return True
             return False
 
@@ -324,9 +330,11 @@ def is_float(num_str):
 
 #only required when actually running program
 #initialise required classes
-calc_values = Calculator()
-main_window = tk.Tk()
 
-application = MainApp(main_window, calc_values)
+if __name__ == "__main__":
+    calc_values = Calculator()
+    main_window = tk.Tk()
 
-main_window.mainloop()
+    application = MainApp(main_window, calc_values)
+
+    main_window.mainloop()
