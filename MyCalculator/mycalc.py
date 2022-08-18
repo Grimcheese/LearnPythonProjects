@@ -244,6 +244,8 @@ class Calculator:
         print("Event bind triggered. " + event.char)
         if event.char == "=" or event.keysym == "Return":
             self.equals_method(main_app)
+        elif event.keysym == "Escape":
+            self.clear_vals(main_app)
         elif self.memory_display.isempty():
             if not input == "-":
                 self.add_to_calc(main_app, event.char)
@@ -301,6 +303,7 @@ class MainApp:
 
         self.user_entry.bind("=", handle_operator_keypress)
         self.user_entry.bind("<KeyPress-Return>", handle_operator_keypress)
+        self.user_entry.bind("<KeyPress-Escape>", handle_operator_keypress)
 
 
     def entry_input_callback(self, input):
